@@ -1,5 +1,9 @@
 # ZyroNex Booking Manager
 
+[![Release](https://img.shields.io/github/v/release/dwrean-net/zyronex-booking-manager?label=Release&logo=github)](https://github.com/dwrean-net/zyronex-booking-manager/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/dwrean-net/zyronex-booking-manager/total?label=Downloads&logo=github)](https://github.com/dwrean-net/zyronex-booking-manager/releases)
+[![Rights](https://img.shields.io/badge/license-All%20Rights%20Reserved-lightgrey)](./NOTICE.md)
+
 **Δωρεάν εφαρμογή διαχείρισης κρατήσεων και ακινήτων, χωρίς εγκατάσταση.**
 
 Το **ZyroNex Booking Manager** δημιουργήθηκε από τον **Θανάση Λεβαντή — ZyroNex** και λειτουργεί απευθείας μέσα από τον browser ως ένα αυτοτελές αρχείο HTML.
@@ -9,8 +13,11 @@
 
 ## Λήψη
 
-- **[Κατέβασε το ZyroNex Booking Manager](https://github.com/dwrean-net/zyronex-booking-manager/raw/refs/heads/main/ZyroNex_Booking_Manager.html)**
-- **[Κατέβασε τον πλήρη οδηγό χρήσης PDF](https://github.com/dwrean-net/zyronex-booking-manager/raw/refs/heads/main/ZyroNex_User_Guide_GR.pdf)**
+- **[Κατέβασε το ZyroNex Booking Manager](https://github.com/dwrean-net/zyronex-booking-manager/releases/latest/download/ZyroNex_Booking_Manager.html)**
+- **[Κατέβασε τον πλήρη οδηγό χρήσης PDF](https://github.com/dwrean-net/zyronex-booking-manager/releases/latest/download/ZyroNex_User_Guide_GR.pdf)**
+- **[Δες όλες τις εκδόσεις](https://github.com/dwrean-net/zyronex-booking-manager/releases)**
+
+Ο μετρητής **Downloads** στην κορυφή υπολογίζει τις λήψεις των αρχείων που διανέμονται μέσω GitHub Releases. Η καταμέτρηση ξεκινά από την έκδοση **v1.15.2** και δεν περιλαμβάνει παλαιότερες λήψεις που έγιναν απευθείας από τα raw αρχεία του repository.
 
 Τα πρωτότυπα αρχεία βρίσκονται επίσης μέσα στο repository:
 
