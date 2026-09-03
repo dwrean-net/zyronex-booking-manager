@@ -1,0 +1,35 @@
+name: Create ZyroNex Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/create-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v1.15.2
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" \
+              ZyroNex_Booking_Manager.html \
+              ZyroNex_User_Guide_GR.pdf \
+              --clobber
+          else
+            gh release create "$TAG" \
+              ZyroNex_Booking_Manager.html \
+              ZyroNex_User_Guide_GR.pdf \
+              --title "ZyroNex Booking Manager v1.15.2" \
+              --notes "Official free distribution of ZyroNex Booking Manager v1.15.2 and the Greek user guide. Creator: Θανάσης Λεβαντής — ZyroNex. Hosted and distributed by dwrean.net with permission of the creator. © 2026 ZyroNex — Θανάσης. All Rights Reserved."
