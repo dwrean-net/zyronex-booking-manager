@@ -1,11 +1,10 @@
-name: Create ZyroNex Release
+name: Publish ZyroNex Booking Manager Update
 
 on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/create-release.yml'
-  workflow_dispatch:
+      - 'incoming/v*/part-*.b64'
 
 permissions:
   contents: write
@@ -16,21 +15,59 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Create or update GitHub Release
+      - name: Validate and install creator-provided update
+        id: update
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          dirs=(incoming/v*/)
+          if [ "${#dirs[@]}" -ne 1 ]; then
+            echo "Expected exactly one versioned incoming package directory." >&2
+            exit 1
+          fi
+          package_dir="${dirs[0]%/}"
+          tag="${package_dir##*/}"
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version tag: $tag" >&2
+            exit 1
+          fi
+          parts=("$package_dir"/part-*.b64)
+          if [ "${#parts[@]}" -lt 1 ]; then
+            echo "Missing update package parts." >&2
+            exit 1
+          fi
+          cat "${parts[@]}" | base64 --decode > /tmp/zyronex-update.zip
+          unzip -tq /tmp/zyronex-update.zip
+          unzip -p /tmp/zyronex-update.zip ZyroNex_Booking_Manager.html > ZyroNex_Booking_Manager.html
+          unzip -p /tmp/zyronex-update.zip ZyroNex_User_Guide_GR.pdf > ZyroNex_User_Guide_GR.pdf
+          test "$(stat -c%s ZyroNex_Booking_Manager.html)" -gt 2500000
+          test "$(stat -c%s ZyroNex_User_Guide_GR.pdf)" -gt 3000000
+          grep -aqi '<html' ZyroNex_Booking_Manager.html
+          test "$(head -c 4 ZyroNex_User_Guide_GR.pdf)" = '%PDF'
+          git rm -r "$package_dir"
+          git add ZyroNex_Booking_Manager.html ZyroNex_User_Guide_GR.pdf
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Publish ZyroNex Booking Manager $tag"
+          git push origin HEAD:main
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: v1.15.2
+          TAG: ${{ steps.update.outputs.tag }}
         run: |
+          set -euo pipefail
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" \
-              ZyroNex_Booking_Manager.html \
-              ZyroNex_User_Guide_GR.pdf \
-              --clobber
+            gh release upload "$TAG" ZyroNex_Booking_Manager.html ZyroNex_User_Guide_GR.pdf --clobber
           else
-            gh release create "$TAG" \
-              ZyroNex_Booking_Manager.html \
-              ZyroNex_User_Guide_GR.pdf \
-              --title "ZyroNex Booking Manager v1.15.2" \
-              --notes "Official free distribution of ZyroNex Booking Manager v1.15.2 and the Greek user guide. Creator: Θανάσης Λεβαντής — ZyroNex. Hosted and distributed by dwrean.net with permission of the creator. © 2026 ZyroNex — Θανάσης. All Rights Reserved."
+            gh release create "$TAG" ZyroNex_Booking_Manager.html ZyroNex_User_Guide_GR.pdf \
+              --target main \
+              --title "ZyroNex Booking Manager $TAG" \
+              --notes "Επίσημη δωρεάν διάθεση της έκδοσης 1.19.0 από τον δημιουργό Θανάση Λεβαντή. Νέα: υπολογισμός εσόδων και πληρότητας από ολοκληρωμένες κρατήσεις, σύγκριση ετών, εισαγωγή CSV, διόρθωση ΤΑΚΚ και υπολογιστής τελικής τιμής. Φιλοξενία από dwrean.net με άδεια του δημιουργού. © 2026 ZyroNex — Θανάσης. All Rights Reserved."
           fi
